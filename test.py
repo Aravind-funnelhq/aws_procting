@@ -82,7 +82,7 @@ def generate_frames():
     last_ly, last_ry = 0, 0
 
     try:
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(cv2.CAP_V4L2)
         frame_count = 0
         while cap.isOpened():
 

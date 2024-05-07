@@ -1,14 +1,12 @@
 from flask import Flask, render_template, Response, request, jsonify
-from aiortc import RTCPeerConnection, RTCSessionDescription
-import json
-import uuid
-import asyncio
 import logging
 import cv2
 import numpy as np
 import mediapipe as mp
 import pymysql
-import logging
+import asyncio
+import numpy as np
+from io import BytesIO
 import boto3
 
 app = Flask(__name__, static_url_path='/static')
@@ -82,7 +80,7 @@ def generate_frames():
     last_ly, last_ry = 0, 0
 
     try:
-        cap = cv2.VideoCapture(cv2.CAP_V4L2)
+        cap = cv2.VideoCapture(0)
         frame_count = 0
         while cap.isOpened():
 
@@ -250,8 +248,8 @@ def generate_frames():
             #     break
             ret, buffer = cv2.imencode('.jpg', img)
             frame = buffer.tobytes()
-            yield (b'--frame\r\n'
-                       b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+            decoded_frame = cv2.imdecode(np.frombuffer(frame, np.uint8), -1)
+            yield decoded_frame
 
     except Exception as e:
         logging.error(f"Error generating frames: {e}")
